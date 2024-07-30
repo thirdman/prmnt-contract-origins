@@ -42,7 +42,7 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         string memory _symbol,
         address _royaltyRecipient,
         uint128 _royaltyBps,
-        address  _whitelistAddress
+        address  _whitelistAddress // this is an empty test field
         
         ) ERC721Base (
             _defaultAdmin,

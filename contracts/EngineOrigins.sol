@@ -8,8 +8,7 @@
 */
 
 pragma solidity ^0.8.24;
-import "@thirdweb-dev/contracts/base/ERC721Base.sol";
-
+import "@thirdweb-dev/contracts/lib/Strings.sol";
 
 contract EngineOrigins {
     uint256 ringCount  = 12;

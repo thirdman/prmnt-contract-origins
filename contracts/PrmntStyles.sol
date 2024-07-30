@@ -14,10 +14,8 @@ import "hardhat/console.sol";
 contract PrmntStyles {
     uint256 _version  = 0;
     uint256 private _tokenIdCounter;
-    // uint[] public contractStyles;
     mapping(uint256 => string) private stylesMap;
     mapping(uint256 => string) private galleryStylesMap;
-    // mapping(string => mapping(string => uint)) private workStylesMap;
     mapping(address => uint[]) private contractStylesMap;
     
     event StyleUpdated(address indexed sender, uint256 styleId );
@@ -82,21 +80,6 @@ contract PrmntStyles {
     function setContractStyle(address contractAddress, uint styleId) external  {
         contractStylesMap[contractAddress][0] = styleId;
     }
-
-    // /**
-    //  * @dev Adds a single item style string
-    //  */
-    // function setWorkStyle(string memory galleryId,  string calldata workId, uint styleId ) external  {
-    //     workStylesMap[galleryId][workId] = styleId;
-    //     emit WorkStyleUpdate(msg.sender, galleryId, workId);
-    // }
-    
-    // /**
-    //  * @dev Returns a single item settings string
-    //  */
-    // function getWorkStyle(string memory galleryId, string calldata workId) public view returns(string memory)  { //onlyOwner
-    //     return stylesMap[workStylesMap[galleryId][workId]];
-    // }
     
     /**
      * @dev Sets the version
