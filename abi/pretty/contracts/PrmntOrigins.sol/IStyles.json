@@ -1,0 +1,21 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "styleId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getStyle",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "style",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]

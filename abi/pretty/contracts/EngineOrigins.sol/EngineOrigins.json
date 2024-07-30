@@ -1,0 +1,54 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "hue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "progress",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "intensity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "depth",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "scale",
+        "type": "uint256"
+      }
+    ],
+    "name": "createArtwork",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getExtended",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]
