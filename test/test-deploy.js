@@ -2,11 +2,12 @@ const {ethers, artifacts} = require("hardhat")
 const { expect, assert } = require("chai");
 // const idArray = [0, 10, 40, 90, 130, 170, 210, 250, 280, 310, 330, 569, 360, 361]
 const idArray = [0, 10]
-const doThemes = true;
+const doTests = false;
+const doThemes = false;
 const doOrigins = true;
-const allMode = false;
-const doStyle = true;  
+const doStyle = false;  
 const doGallery = false;  
+const allMode = false;
 
 const whitelistAddress = '0x5F16f8Dc7a246315fD94793FDE8470eA85A40fD4'
 
@@ -47,10 +48,38 @@ describe("PrmntOrigins", function () {
     console.log(' * * * * * * *')
   });
   
+  if(doTests){
+    it("Should test hues", async function () {
+      // await setAttributes(tokenId,  uint256 _duration,   uint256 _intensity, uint256 _progress, uint256 _depth, uint256 _scale  ) external {
+        
+      
+      await PrmntOrigins.setTokenHue(0, 89);
+      await PrmntOrigins.setTokenHue(1, 20);
+      await PrmntOrigins.setTokenHue(2, 30);
+      await PrmntOrigins.setTokenHue(3, 40);
+      await PrmntOrigins.setTokenHue(4, 50);
+      await PrmntOrigins.setTokenHue(5, 60);
+      await PrmntOrigins.setTokenHue(6, 70);
+      await PrmntOrigins.setTokenHue(7, 80);
+      await PrmntOrigins.setTokenHue(8, 80);
+      await PrmntOrigins.setTokenHue(9, 80);
+      await PrmntOrigins.setTokenHue(10, 80);
+      await PrmntOrigins.setTokenHue(11, 80);
+      const usedHue = await PrmntOrigins.tokenHueToId(89);
+      const usedHue1 = await PrmntOrigins.tokenHueToId(20);
+      const usedHue3 = await PrmntOrigins.tokenHueToId(200);
+      console.log('usedHue ids:', usedHue, usedHue1, usedHue3);
+      const unusedHue = await PrmntOrigins.getUnusedHue(1);
+      console.log('unusedHue', unusedHue);
+      const unusedHue2 = await PrmntOrigins.getUnusedHue(2);
+      console.log('unusedHue2', unusedHue2);
+    });
+  }
   if(doOrigins){
   it("Should set an artwork", async function () {
     const expectedId = 0
     const expectedHue = getRandomInt(0, 359)
+    console.log('expectedHue', expectedHue)
     // const eDuration = 20
     // const eIntensity = 8
     // const eProgress = 50
@@ -70,6 +99,7 @@ describe("PrmntOrigins", function () {
         // [], // default works
       );
       await transactionResponseClaim.wait(1);
+      
     const transactionResponse = await PrmntOrigins.setAttributes(
       expectedId, 
       attributes.duration, 
@@ -79,16 +109,77 @@ describe("PrmntOrigins", function () {
       attributes.scale,
     );
     transactionResponse.wait(1)
-    console.log('set attributes transactionResponse', transactionResponse);
+    // console.log('set attributes transactionResponse', transactionResponse);
     const currentValue = await PrmntOrigins.getAttributes(expectedId); 
     console.log('currentValue', currentValue)
     const currentURI = await PrmntOrigins.tokenURI(expectedId);
     console.log('currentURI', currentURI)
     const currentImage = await PrmntOrigins.getImage(expectedId);
-    console.log('currentImage', currentImage)
+    console.log('currentImage')
+    console.log(currentImage)
     
-    
-    
+    const transactionResponseClaim2 = await PrmntOrigins.claimRandom();
+    await transactionResponseClaim2.wait(1);
+    const transactionResponseClaim3 = await PrmntOrigins.claimRandom();
+    await transactionResponseClaim3.wait(1);
+    await PrmntOrigins.claimRandom();
+    await PrmntOrigins.claimRandom();
+    await PrmntOrigins.claimRandom();
+    await PrmntOrigins.claimRandom();
+    await PrmntOrigins.claimRandom();
+    await PrmntOrigins.claimRandom(); 8
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+    await PrmntOrigins.claimRandom(); 
+      const claimedHueValue1 = await PrmntOrigins.tokenHueToId(expectedHue);
+      console.log('claimedHueValue1', claimedHueValue1);
+      const claimedHueValue2 = await PrmntOrigins.tokenHueToId(expectedHue + 2);
+      console.log('claimedHueValue1', claimedHueValue2);
+      const claimedHueValue3 = await PrmntOrigins.tokenHueToId(expectedHue + 1);
+      console.log('claimedHueValue1', claimedHueValue3);
+      // const unclaimedHueValue = await PrmntOrigins.tokenHueToId(362);
+      // console.log('unclaimedHueValue', unclaimedHueValue);
+
+      const currentAttributes8 = await PrmntOrigins.getAttributes(8);
+      console.log(`currentAttributes8 (#${9})`, currentAttributes8)
+      const currentImage8 = await PrmntOrigins.getImage(8);
+      console.log('currentImage8')
+      console.log(currentImage8)
+      const currentAttributes19 = await PrmntOrigins.getAttributes(19);
+      console.log(`currentAttributes19 (#${19})`, currentAttributes19)
+      const currentImage19 = await PrmntOrigins.getImage(19);
+      console.log('-')
+      console.log('currentImage19')
+      console.log(currentImage19)
+      console.log('-')
+      const currentAttributes27 = await PrmntOrigins.getAttributes(27);
+      console.log(`currentAttributes27 (#${27})`, currentAttributes27)
+      const currentImage27 = await PrmntOrigins.getImage(27);
+      console.log('currentImage27')
+      console.log(currentImage27)
+
+    // const themeString = await PrmntOrigins.getThemeString(['#000', '#444', '#777', '#aaa', '#eee' ]);
+    // console.log('themeString', themeString)
+    const colorVariables = await PrmntOrigins.getColorVariables(['#000', '#444', '#777', '#aaa', '#eee' ]);
+    console.log('colorVariables', colorVariables)
     expect(currentValue).to.be.a('array');
     // assert.equal(currentValue.toString(), expectedValue)
   })
@@ -161,7 +252,7 @@ describe("PrmntOrigins", function () {
     it("Should Resolve theme functions", async function () {
     const testTheme2b = await PrmntOrigins.createThemeValues(220, 80, 80);
     console.log('testTheme2b', testTheme2b)
-    // const currentItemTheme = await PrmntOrigins.getTheme(expectedId);
+    
     });
   }
   if (doOrigins && !allMode) {
@@ -197,11 +288,11 @@ describe("PrmntOrigins", function () {
       const currentArtwork = await PrmntOrigins.getAttributes(expectedId);
       console.log(`currentArtwork (#${expectedId})`, currentArtwork)
       const currentURI = await PrmntOrigins.tokenURI(expectedId);
-      console.log('currentURI')
-      console.log(currentURI)
+      // console.log('currentURI')
+      // console.log(currentURI)
       const currentImage = await PrmntOrigins.getImage(expectedId);
       console.log('https://localhost:3000/')
-      console.log('currentImage')
+      console.log('currentImage:')
       console.log(currentImage)
       const currentBase64 = await PrmntOrigins.getBase64Image(expectedId);
       console.log('------')
@@ -243,20 +334,20 @@ describe("PrmntOrigins", function () {
       const currentItemGallerySettings = await PrmntOrigins.getGallerySettings(expectedId);
       console.log('currentItemGallerySettings', currentItemGallerySettings)
       
-      const currentItemTheme = await PrmntOrigins.getTheme(expectedId);
-      console.log('currentItemTheme', currentItemTheme)
-      const currentItemThemeName = await PrmntOrigins.getThemeName(expectedId);
-      console.log('currentItemThemeName', currentItemThemeName)
-      const currentItemThemeColors = await PrmntOrigins.getThemeColors(expectedId);
-      console.log('currentItemThemeColors', currentItemThemeColors)
+      // const currentItemTheme = await PrmntOrigins.getTheme(expectedId);
+      // console.log('currentItemTheme', currentItemTheme)
+      // const currentItemThemeName = await PrmntOrigins.getThemeName(expectedId);
+      // console.log('currentItemThemeName', currentItemThemeName)
+      // const currentItemThemeColors = await PrmntOrigins.getThemeColors(expectedId);
+      // console.log('currentItemThemeColors', currentItemThemeColors)
       
-      const themeColor0 = await PrmntOrigins.getColor(expectedId, 0);
-      const themeColor4 = await PrmntOrigins.getColor(expectedId, 4);
-      console.log('themeColor0', themeColor0)
-      console.log('themeColor4', themeColor4)
-      await PrmntOrigins.setThemeAttributes(expectedId, 10, 40);
-      const updatedItemThemeColors = await PrmntOrigins.getThemeColors(expectedId);
-      console.log('updatedItemThemeColors', updatedItemThemeColors)
+      // const themeColor0 = await PrmntOrigins.getColor(expectedId, 0);
+      // const themeColor4 = await PrmntOrigins.getColor(expectedId, 4);
+      // console.log('themeColor0', themeColor0)
+      // console.log('themeColor4', themeColor4)
+      // await PrmntOrigins.setThemeAttributes(expectedId, 10, 40);
+      // const updatedItemThemeColors = await PrmntOrigins.getThemeColors(expectedId);
+      // console.log('updatedItemThemeColors', updatedItemThemeColors)
       
 
       expect(currentImage).to.be.a('string');
@@ -310,9 +401,12 @@ describe("PrmntOrigins", function () {
       const currentImage2 = await PrmntGallery.getImage(expectedId + 1, 17);
       console.log('currentImage2')
       console.log(currentImage2)
-      const currentImage3 = await PrmntGallery.getImage(expectedId + 2, 37);
+      const currentImage3 = await PrmntGallery.getImage(expectedId + 2, 23);
       console.log('currentImage3')
       console.log(currentImage3)
+      const currentImage4 = await PrmntGallery.getImage(expectedId + 3, 37);
+      console.log('currentImage4')
+      console.log(currentImage4)
       const currentBase64 = await PrmntGallery.getBase64Image(expectedId);
       console.log('------')
       console.log(currentBase64)

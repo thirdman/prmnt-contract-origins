@@ -11,6 +11,7 @@ pragma solidity ^0.8.24;
 import "@thirdweb-dev/contracts/base/ERC721Base.sol";
 import "base64-sol/base64.sol";
 import "./EngineOrigins.sol";
+import "hardhat/console.sol";
 
 contract PrmntOrigins is ERC721Base, EngineOrigins {
     uint256 public mintFee;
@@ -55,13 +56,37 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         descriptor = new EngineOrigins();
         generation = 0;
         moduleId = 0;
-        defaultContrast = 60;
+        defaultContrast = 40;
         defaultSaturation = 40;
         defaultScale = 100;
     }
     event GalleryUpdate(address indexed sender, uint256 tokenId );
     event WorkUpdate(address indexed sender, uint256 tokenId, WorkItem item);
     error Unauthorized();
+    
+    
+    function claimRandom() external  {
+        uint256 tokenId = nextTokenIdToMint();
+        uint hue = getUnusedHue(tokenId);                       // uses token id as seed
+        uint tempScale = randomInRange(40, 290, tokenId * 100); // entropy value helps differntiate
+        tokenAttributes[tokenId] = Attributes({
+            hue: hue,
+            duration: randomInRange(20, 70, tokenId * 200), 
+            intensity: randomInRange(1, 200, tokenId * 300),
+            progress: randomInRange(10, 100, tokenId * 400),
+            depth: randomInRange(5, 100, tokenId * 500),
+            scale: tempScale
+        });
+        tokenHueToId[hue] = tokenId;
+        tokenIdToContrast[tokenId] = randomInRange(20, 60, tokenId * 600);
+        tokenIdToSat[tokenId] = randomInRange(15, 95, tokenId * 700);
+        tokenIdToScale[tokenId] = tempScale;
+        isAnimatedMap[tokenId] = true;
+        _safeMint(msg.sender, 1);
+        emit GalleryUpdate(msg.sender, tokenId);
+    }
+
+    
     function claim(uint256 hue, uint256 _duration, uint256 _intensity , uint256 _progress, uint256 _depth ) external payable { //uint256 tokenId, uint256 _amount
         if (hue < 0 || hue > 359 || tokenHueToId[hue] > 0) revert Unauthorized();
         uint256 tokenId = nextTokenIdToMint();
@@ -102,6 +127,7 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
      * @notice Should only work if the sender is the token owner.
      */
 
+
     function setAttributes(uint256 tokenId,  uint256 _duration,   uint256 _intensity, uint256 _progress, uint256 _depth, uint256 _scale  ) external {
         if (msg.sender != ownerOf(tokenId)) revert Unauthorized();
         tokenAttributes[tokenId] = Attributes({
@@ -122,7 +148,7 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         return string.concat('data:application/json;base64,', 
             Base64.encode(
                 abi.encodePacked(
-                    '{"description": "Limited edition dynamic on-chain gallery. The expression of this work is controlled by the owner settings of Intensity, Duration, Progress, and Depth. ", "name": "PRMNT Origins Hue ', 
+                    '{"description": "Limited edition dynamic on-chain image. The expression of this work is controlled by the owner settings of Theme, Intensity, Duration, Progress, and Depth. ", "name": "Origins Hue ', 
                     Strings.toString(tokenAttributes[tokenId].hue), 
                     '/360", ', 
                     '"external_url": "', baseUri, Strings.toString(tokenId), '" , ', 
@@ -172,7 +198,8 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
      * @dev Returns the Origins image string
      */
     function getImage(uint256 tokenId) public view returns (string memory ){
-        return createArtwork( tokenAttributes[tokenId].hue, tokenAttributes[tokenId].progress, tokenAttributes[tokenId].intensity, tokenAttributes[tokenId].depth, defaultScale);
+        // return createArtwork( tokenAttributes[tokenId].hue, tokenAttributes[tokenId].progress, tokenAttributes[tokenId].intensity, tokenAttributes[tokenId].depth, defaultScale);
+        return createArtworkWithTheme( tokenAttributes[tokenId].hue, tokenAttributes[tokenId].progress, tokenAttributes[tokenId].intensity, tokenAttributes[tokenId].depth, tokenAttributes[tokenId].scale, tokenAttributes[tokenId].duration, getThemeColors(tokenId));
     }
     
     /**
@@ -244,8 +271,8 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
      */
     function getThemeColors(uint256 tokenId) public view returns (string[5] memory themeColors ){   
         uint themeHue = tokenAttributes[tokenId].hue;
-        uint sat = defaultSaturation;
-        uint contrast = tokenIdToSat[tokenId];
+        uint sat = tokenIdToSat[tokenId];
+        uint contrast = tokenIdToContrast[tokenId];
         themeColors = createThemeColors(themeHue, sat, contrast);
         return themeColors;
     }
@@ -258,11 +285,11 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
      * @param contrast contrast value between 0 and 100, where 0 makes every color the same, and 100 is max between white and black;
      */
     function createThemeColors(uint256 hue, uint sat, uint contrast) internal pure returns (string[5] memory themeColors ){   
-        themeColors[0] = createColor(hue, sat, 50 - contrast / 2);
-        themeColors[1] = createColor(hue, sat, 50 - contrast / 4);
-        themeColors[2] = createColor(hue, sat, contrast);
-        themeColors[3] = createColor(hue, sat, 50 + contrast / 2);
-        themeColors[4] = createColor(hue, sat, 50 + contrast / 4);
+        themeColors[0] = createColor(hue, sat, 50 - contrast / 3);
+        themeColors[1] = createColor(hue, sat, 50 - contrast / 5);
+        themeColors[2] = createColor(hue, sat, 50);
+        themeColors[3] = createColor(hue, sat, 50 + contrast / 5);
+        themeColors[4] = createColor(hue, sat, 50 + contrast / 3);
         return themeColors;
     }
     
@@ -331,8 +358,45 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         validContracts.push(newAddress);
     }
     
+
     
 
+
+    /**
+     * TEMP. 
+     */
+    function setTokenHue(uint tokenId, uint hue) public {
+        tokenHueToId[tokenId] = hue;
+    }
+
+    /**
+     *  get unusedHue
+     */
+    function getUnusedHue(uint seed) public view returns (uint hueValue){
+        uint tempValue;
+        uint8 i = 0; 
+        while(i < 360){
+            tempValue = randomInRange(0, 359, seed + i * 1000);
+            console.log('tempValue', tempValue);
+            if (tokenHueToId[tempValue] == 0){
+                return tempValue;
+            }
+            i++;
+        } 
+    }
+    /**
+     * 
+     * @param min : lowest uint
+     * @param max : highst uint 
+     * @param entropy : value that allows for new seed
+     */
+
+    function randomInRange(uint min, uint max, uint entropy) internal pure returns (uint256) {
+        uint randomness =  uint256(keccak256(abi.encodePacked(entropy)));
+        uint value = randomness % (max - min) + min;
+        console.log('random value', value, entropy);
+        return value;
+    }
     /**
      *  Return style data
      */
