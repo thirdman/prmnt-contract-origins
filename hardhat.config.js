@@ -8,6 +8,7 @@ require("hardhat-contract-sizer");
 require("solidity-coverage");
 require("./tasks/block-number");
 require('hardhat-abi-exporter');
+require("@nomicfoundation/hardhat-foundry");
 
 
 

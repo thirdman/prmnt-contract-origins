@@ -28,6 +28,11 @@
       },
       {
         "internalType": "address",
+        "name": "_stylesAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_whitelistAddress",
         "type": "address"
       }
@@ -294,25 +299,6 @@
   },
   {
     "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "GalleryUpdate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [],
     "name": "MetadataFrozen",
     "type": "event"
@@ -367,6 +353,25 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokenUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -385,74 +390,6 @@
     ],
     "name": "Transfer",
     "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "contractAddress",
-            "type": "address"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct WorkItem",
-        "name": "item",
-        "type": "tuple"
-      }
-    ],
-    "name": "WorkUpdate",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newAddress",
-        "type": "address"
-      }
-    ],
-    "name": "addFragmentContract",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "contractAddress",
-        "type": "address"
-      }
-    ],
-    "name": "addItem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "inputs": [
@@ -643,6 +580,11 @@
         "internalType": "uint256",
         "name": "scale",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "styleId",
+        "type": "uint256"
       }
     ],
     "name": "createArtwork",
@@ -684,9 +626,19 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      },
+      {
         "internalType": "string[5]",
         "name": "colors",
         "type": "string[5]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "styleId",
+        "type": "uint256"
       }
     ],
     "name": "createArtworkWithTheme",
@@ -797,6 +749,19 @@
   },
   {
     "inputs": [],
+    "name": "defaultStyleId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "descriptor",
     "outputs": [
       {
@@ -894,35 +859,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "gallerySettingsMap",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "mode",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "duration",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "theme",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "generation",
     "outputs": [
@@ -949,6 +885,25 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getArt",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -1131,105 +1086,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getFragmentContracts",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getGalleryArtworks",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "artworks",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getGalleryItems",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "contractAddress",
-            "type": "address"
-          }
-        ],
-        "internalType": "struct WorkItem[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getGallerySettings",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "mode",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "duration",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "theme",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct GallerySettings",
-        "name": "gallerySettings",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -1305,6 +1161,38 @@
         "internalType": "uint16",
         "name": "",
         "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getScene",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getStyleContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1475,35 +1363,6 @@
         "internalType": "bool",
         "name": "isApprovedOrOwnerOf",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "itemsMap",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "contractAddress",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1837,41 +1696,6 @@
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "mode",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "duration",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "theme",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct GallerySettings",
-        "name": "newSettings",
-        "type": "tuple"
-      }
-    ],
-    "name": "setGallerySettings",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
         "internalType": "bool",
         "name": "newState",
         "type": "bool"
@@ -1946,12 +1770,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "sat",
+        "name": "_saturation",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "contrast",
+        "name": "_contrast",
         "type": "uint256"
       }
     ],
@@ -2166,6 +1990,59 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenIdToStyleId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenStyles",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "contrast",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "saturation",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "styleId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isAnimated",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
       }
@@ -2263,25 +2140,6 @@
     "name": "transferFrom",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "validContracts",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

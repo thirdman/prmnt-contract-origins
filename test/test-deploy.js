@@ -5,6 +5,7 @@ const idArray = [0, 10]
 const doTests = false;
 const doThemes = false;
 const doOrigins = true;
+const doClaim = true;
 const doStyle = false;  
 const doGallery = false;  
 const allMode = false;
@@ -32,14 +33,16 @@ describe("PrmntOrigins", function () {
       console.error('NO SIGNER/OWNER');
       return
     }
-  
-    PrmntOriginsFactory = await ethers.getContractFactory("PrmntOrigins")
-    PrmntOrigins = await PrmntOriginsFactory.deploy(signerOwner,"PrmntOrigins", "PRMNT", signerOwner, 500, whitelistAddress);
-    console.log('PrmntOrigins.target is', PrmntOrigins.target);
-
+    
     PrmntStylesFactory = await ethers.getContractFactory("PrmntStyles")
     PrmntStyles = await PrmntStylesFactory.deploy();
     console.log('PrmntStyles.addrtargetess is', PrmntStyles.target);
+
+  
+    PrmntOriginsFactory = await ethers.getContractFactory("PrmntOrigins")
+    PrmntOrigins = await PrmntOriginsFactory.deploy(signerOwner,"PrmntOrigins", "PRMNT", signerOwner, 500, PrmntStyles.target, whitelistAddress);
+    console.log('PrmntOrigins.target is', PrmntOrigins.target);
+
     console.log(' * * * * * * *')
     
     // PrmntGalleryFactory = await ethers.getContractFactory("PrmntGallery")
@@ -75,10 +78,12 @@ describe("PrmntOrigins", function () {
       console.log('unusedHue2', unusedHue2);
     });
   }
-  if(doOrigins){
+  if(doOrigins && 1===2){
   it("Should set an artwork", async function () {
     const expectedId = 0
     const expectedHue = getRandomInt(0, 359)
+    const styleContract = await PrmntOrigins.getStyleContract();
+    console.log('styleContract', styleContract)
     console.log('expectedHue', expectedHue)
     // const eDuration = 20
     // const eIntensity = 8
@@ -255,9 +260,22 @@ describe("PrmntOrigins", function () {
     
     });
   }
-  if (doOrigins && !allMode) {
+  if (doClaim) {
     it("Should Claim a Token", async function () {
       const expectedId = 0;
+      const transactionResponseClaim2 = await PrmntOrigins.claimRandom();
+      await transactionResponseClaim2.wait(1);
+      console.log('transactionResponseClaim2', transactionResponseClaim2)
+      const currentURI = await PrmntOrigins.tokenURI(expectedId);
+      console.log('currentURI')
+      console.log(currentURI)
+    })
+  }
+  if (doOrigins && !allMode && 1===2) {
+    it("Should Claim a Token", async function () {
+      const expectedId = 0;
+      const itemStyleTest = await PrmntOrigins.getItemStyle(0);
+      console.log('getItemStyle', itemStyleTest)
       // const expectedHue = 20; //getRandomInt(0, 359);
       const expectedHue = getRandomInt(0, 359);
       const expectedCount = 1;
@@ -303,60 +321,28 @@ describe("PrmntOrigins", function () {
       console.log('ownerOf', ownerOf)
       await PrmntOrigins.ownerOf(expectedId);
       
-      // const transactionResponse1 = await PrmntOrigins.addItem(expectedId, 'stirngslskdfjsldfs');
-      // await transactionResponse1.wait(1)
-      // const transactionResponse2 = await PrmntOrigins.addItem(expectedId, 'sdfsdf');
-      // await transactionResponse2.wait(1)
-      // const transactionResponse3 = await PrmntOrigins.removeItem(expectedId, 1);
-      // await transactionResponse3.wait(1)
-      
-      const addFragmentContract0 = await PrmntOrigins.addFragmentContract(PrmntStyles.target);
-      await addFragmentContract0.wait(1)
-      const fragmentContracts = await PrmntOrigins.getFragmentContracts();
-      console.log('fragmentContracts', fragmentContracts)
+      // const addFragmentContract0 = await PrmntOrigins.addFragmentContract(PrmntStyles.target);
+      // await addFragmentContract0.wait(1)
+      // const fragmentContracts = await PrmntOrigins.getFragmentContracts();
+      // console.log('fragmentContracts', fragmentContracts)
 
-      // const currentItems = await PrmntOrigins.getGalleryItems(expectedId);
-      // console.log(`currentItems (#${expectedId})`, currentItems)
-
-      // const transactionResponse4 = await PrmntOrigins.setGalleryItems(expectedId, ['stirngslskdfjsldfs', 'sdf','sdf']);
-      // await transactionResponse4.wait(1)
-      // const currentItems3 = await PrmntOrigins.getGalleryItems(expectedId);
-      // console.log(`currentItems3 (#${expectedId})`, currentItems3)
-      // const transactionResponse5 = await PrmntOrigins.setItemSettings(expectedId, '8001:0x123:2', "{'duration': 12, 'depth': 34}");
-      // await transactionResponse5.wait(1)
       
-      // const galleryItemSettings = await PrmntOrigins.getItemSettings(expectedId, '8001:0x123:2');
-      // console.log('galleryItemSettings', galleryItemSettings)
+      // const transactionResponseGallery = await PrmntOrigins.setGallerySettings(expectedId, {mode: 'page', duration: 10, theme: 1, });
+      // await transactionResponseGallery.wait(1)
 
-      const transactionResponseGallery = await PrmntOrigins.setGallerySettings(expectedId, {mode: 'page', duration: 10, theme: 1, });
-      await transactionResponseGallery.wait(1)
-
-      const currentItemGallerySettings = await PrmntOrigins.getGallerySettings(expectedId);
-      console.log('currentItemGallerySettings', currentItemGallerySettings)
+      // const currentItemGallerySettings = await PrmntOrigins.getGallerySettings(expectedId);
+      // console.log('currentItemGallerySettings', currentItemGallerySettings)
       
-      // const currentItemTheme = await PrmntOrigins.getTheme(expectedId);
-      // console.log('currentItemTheme', currentItemTheme)
-      // const currentItemThemeName = await PrmntOrigins.getThemeName(expectedId);
-      // console.log('currentItemThemeName', currentItemThemeName)
-      // const currentItemThemeColors = await PrmntOrigins.getThemeColors(expectedId);
-      // console.log('currentItemThemeColors', currentItemThemeColors)
-      
-      // const themeColor0 = await PrmntOrigins.getColor(expectedId, 0);
-      // const themeColor4 = await PrmntOrigins.getColor(expectedId, 4);
-      // console.log('themeColor0', themeColor0)
-      // console.log('themeColor4', themeColor4)
-      // await PrmntOrigins.setThemeAttributes(expectedId, 10, 40);
-      // const updatedItemThemeColors = await PrmntOrigins.getThemeColors(expectedId);
-      // console.log('updatedItemThemeColors', updatedItemThemeColors)
-      
-
       expect(currentImage).to.be.a('string');
     });
   }
   if(doStyle){
   it("Should TEST styles", async function () {
     console.log('starting styles....')
-    const expectedStyleId = 0;
+    const expectedStyleId = 1;
+    const expectedSetId = 0;
+    const currentStyle0 = await PrmntStyles.getStyle(0);
+    console.log('currentStyle0', currentStyle0)
     const transactionResponse = await PrmntStyles.mintStyle(PrmntOrigins.target, '.test{blkejre:sdfsdf;}');
     await transactionResponse.wait(1)
     const transactionResponse2 = await PrmntStyles.mintStyle(PrmntOrigins.target, '.aother .style{background:red;}');
@@ -367,10 +353,28 @@ describe("PrmntOrigins", function () {
     console.log('currentStyle2', currentStyle2)
     const currentContractStyle = await PrmntStyles.getContractStyle(PrmntOrigins.target);
     console.log('currentContractStyle', currentContractStyle)
-    const currentContractStyleByIndex = await PrmntStyles.getContractStyleByIndex(PrmntOrigins.target, 1);
+    const currentContractStyleByIndex = await PrmntStyles.getContractStyleByIndex(PrmntOrigins.target, expectedStyleId);
     console.log('currentContractStyleByIndex', currentContractStyleByIndex)
     const currentContractStyles = await PrmntStyles.getContractStyles(PrmntOrigins.target);
     console.log('currentContractStyles', currentContractStyles)
+    
+    const initialSetById = await PrmntStyles.getSetIds(expectedSetId);
+    console.log('initialSetById', initialSetById)
+    if(initialSetById){
+    let promises = initialSetById.map(async styleId => {
+      return await PrmntStyles.getStyle(styleId)
+     });
+
+     //iterate promises
+     //val will be the result of the promise not the promise itself
+      for await (let val of promises){
+        console.log(`style promise result:`, val)
+        // console.log(`style ${styleId} val:`, val)
+      }
+
+    
+      
+    }
     // const galleryItemsFromContract = await PrmntOrigins.getGalleryItemsFromContract(PrmntOrigins.target, 80001, 23, 20);
     // console.log('galleryItemsFromContract', galleryItemsFromContract)
   })
