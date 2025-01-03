@@ -59,6 +59,7 @@ contract EngineOrigins  {
         "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid meet' width='640' height='640' viewBox='0 0 640 640' class='pa' style='background: ",
             createColor(hue, 40, 50),
         "; --p-pulse: 0;'>",
+        getRect("640", "0", "0", createColor(hue, 40, 50), "pa-bg" ),
         generatePaths(ringCount, hue, progress, intensity, depth, scale),
         "<style>",getExtended(),"</style>",
         "<style>",IStyles(stylesContractAddress).getStyle(styleId),"</style>",
@@ -67,10 +68,12 @@ contract EngineOrigins  {
     }
     
     function createArtworkWithTheme( uint256 hue, uint256 progress, uint256 intensity, uint256 depth, uint256 scale, uint256 duration, string[5] memory colors, uint256 styleId) public view returns (string memory){
+        console.log('**********');
+        console.log('********** styleid', styleId);
         string memory parts = string.concat(
-        "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid meet' width='640' height='640' viewBox='0 0 640 640' class='pa' style='background: ",
-            createColor(hue, 40, 50),
-        "; background-color: var(--c4, ",createColor(hue, 40, 50), "); --prmnt-duration:", Strings.toString(duration),";'>",
+        "<svg data-mode='theme' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid meet' width='640' height='640' viewBox='0 0 640 640' class='pa' style='background-color: var(--c4, ", colors[4], "); --prmnt-hue:", Strings.toString(hue),";  --prmnt-duration:", Strings.toString(duration),";'>",
+        //; 
+        getRect("640", "0", "0", colors[4], "pa-bg" ),
         generatePaths(ringCount, hue, progress, intensity, depth, scale),
         // generatePaths(ringCount, hue, progress, intensity, 20, 100),
         "<style>", 
@@ -109,13 +112,24 @@ contract EngineOrigins  {
             "' stroke-dashoffset='", 
             Strings.toString(intensity * 1000),
             "' stroke-dasharray='",
-                Strings.toString(i * progress * 3),
+                Strings.toString(i * 2 * progress),
                 " ",
                 Strings.toString(i * intensity * 3),
             "' /></g>");
         }
         return string.concat("<g stroke='", createColor(hue, 60, 18), "' fill='none' style='stroke: var(--c0,", createColor(hue, 60, 18), "); transform:scale(calc(", Strings.toString(scale), "/100));transform-origin:center;' >", pathItems, "</g>");
     }  
+
+    
+    /**
+     *  @notice               compiles a basic rectangle
+     *  @dev             
+     */
+    function getRect(string memory rectSize, string memory x, string memory y, string memory fill, string memory className ) public pure returns (string memory path){
+        return string.concat("<rect class='",className,"' width='",rectSize,"' height='",rectSize,"' fill='", fill, "' x='",x,"' y='",y,"'/>");
+    }
+
+
 
     /**
      *  @notice               Returns compiled theme style infomration.

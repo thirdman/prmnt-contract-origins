@@ -139,5 +139,44 @@
     ],
     "stateMutability": "pure",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "rectSize",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "x",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "y",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "fill",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "className",
+        "type": "string"
+      }
+    ],
+    "name": "getRect",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "path",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
   }
 ]

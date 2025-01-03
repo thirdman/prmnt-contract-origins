@@ -14,6 +14,7 @@ import "./EngineOrigins.sol";
 import "hardhat/console.sol";
 
 contract PrmntOrigins is ERC721Base, EngineOrigins {
+    // DEFAULTS
     uint256 public mintFee;
     uint256 public generation;
     uint256 public moduleId;
@@ -21,21 +22,23 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
     uint256 public defaultSaturation;
     uint256 public defaultScale;
     uint256 public defaultStyleId;
-    // address[] public validContracts;
-    // address stylesContractAddress;
-    string public galleryDataBase = "https://arweave.net/";
+    address stylesContract;
     string public baseUri = "https://origins.prmnt.art/origin/";
+
     mapping (uint256 => Attributes) public tokenAttributes;    
     mapping (uint256 => StyleAttributes) public tokenStyles;    
     mapping (uint256 => uint256) public tokenHueToId;
-    mapping (uint256 => string) public tokenIdToGallery;
-    mapping (uint256 => uint256) public tokenIdToContrast;
-    mapping (uint256 => uint256) public tokenIdToScale;
-    mapping (uint256 => uint256) public tokenIdToSat;
-    mapping (uint256 => uint256) public tokenIdToStyleId;
+
+    // DEPRECATED
+    // address[] public validContracts;
+    // string public galleryDataBase = "https://arweave.net/";
+    // mapping (uint256 => string) public modeMap;
+    // mapping (uint256 => bool) public isAnimatedMap;
     // mapping (uint256 => uint256) public tokenIdToStyleId;
-    mapping (uint256 => bool) public isAnimatedMap;
-    mapping (uint256 => string) public modeMap;
+    // mapping (uint256 => string) public tokenIdToGallery;
+    // mapping (uint256 => uint256) public tokenIdToContrast;
+    // mapping (uint256 => uint256) public tokenIdToScale;
+    // mapping (uint256 => uint256) public tokenIdToSat;
     
     EngineOrigins public descriptor;
 
@@ -58,10 +61,10 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         mintFee = 5000000000000000; // 0.005 eth
         descriptor = new EngineOrigins(_stylesAddress);
         generation = 0;
-        stylesContractAddress = _stylesAddress;
+        stylesContract = _stylesAddress;
         moduleId = 0;
         defaultContrast = 40;
-        defaultSaturation = 40;
+        defaultSaturation = 60;
         defaultScale = 100;
         defaultStyleId = 2;
     }
@@ -73,26 +76,6 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         uint256 tokenId = nextTokenIdToMint();
         uint hue = getUnusedHue(tokenId);                       // uses token id as seed
         uint tempScale = randomInRange(40, 290, tokenId * 100); // entropy value helps differntiate
-        // tokenAttributes[tokenId] = Attributes({
-        //     hue: hue,
-        //     duration: randomInRange(20, 70, tokenId * 200), 
-        //     intensity: randomInRange(1, 200, tokenId * 300),
-        //     progress: randomInRange(10, 100, tokenId * 400),
-        //     depth: randomInRange(5, 100, tokenId * 500),
-        //     scale: tempScale
-        // });
-        // tokenStyles[tokenId] =  StyleAttributes(
-        //     randomInRange(20, 60, tokenId * 600), 
-        //     randomInRange(15, 95, tokenId * 700), 
-        //     defaultStyleId, 
-        //     true
-        // );
-        // setTokenStyle(tokenId, 
-        //     randomInRange(20, 60, tokenId * 600), 
-        //     randomInRange(15, 95, tokenId * 700), 
-        //     defaultStyleId, 
-        //     true
-        // );
         setTokenData(tokenId, Attributes({
             hue: hue,
             duration: randomInRange(20, 70, tokenId * 200), 
@@ -100,48 +83,37 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
             progress: randomInRange(10, 100, tokenId * 400),
             depth: randomInRange(5, 100, tokenId * 500),
             scale: tempScale
-        }), StyleAttributes(randomInRange(20, 60, tokenId * 600), 
-            randomInRange(15, 95, tokenId * 700), 
-            defaultStyleId, 
-            true));
+        }), StyleAttributes({
+            contrast: randomInRange(20, 55, tokenId * 600), 
+            saturation: randomInRange(40, 95, tokenId * 700), 
+            styleId: randomInRange(4, 6, tokenId * 800), 
+            isAnimated: true
+            }));
 
-        // tokenHueToId[hue] = tokenId;
-        // tokenIdToContrast[tokenId] = randomInRange(20, 60, tokenId * 600);
-        // tokenIdToSat[tokenId] = randomInRange(15, 95, tokenId * 700);
-        // tokenIdToScale[tokenId] = tempScale;
-        // tokenIdToStyleId[tokenId] = defaultStyleId;
-        // isAnimatedMap[tokenId] = true;
         _safeMint(msg.sender, 1);
         emit TokenUpdate(msg.sender, tokenId);
     }
 
     
-    function claim(uint256 hue, uint256 _duration, uint256 _intensity , uint256 _progress, uint256 _depth ) external payable { //uint256 tokenId, uint256 _amount
+    function claimCustom(uint256 hue, uint256 _duration, uint256 _intensity , uint256 _progress, uint256 _depth, uint256 _scale, uint256 _styleId ) external payable { //uint256 tokenId, uint256 _amount
         if (hue < 0 || hue > 359 || tokenHueToId[hue] > 0) revert Unauthorized();
         uint256 tokenId = nextTokenIdToMint();
-        // tokenAttributes[tokenId] = Attributes({
-        //     hue: hue,
-        //     duration: _duration, 
-        //     intensity: _intensity,
-        //     progress: _progress,
-        //     depth: _depth,
-        //     scale: defaultScale
-        // });
-        // setTokenStyle(tokenId, defaultContrast, defaultSaturation, defaultStyleId, true);
-        setTokenData(tokenId, Attributes({
-            hue: hue,
-            duration: _duration, 
-            intensity: _intensity,
-            progress: _progress,
-            depth: _depth,
-            scale: defaultScale
-        }), StyleAttributes(defaultContrast, defaultSaturation, defaultStyleId, true));
-        // tokenHueToId[hue] = tokenId;
-        // tokenIdToContrast[tokenId] = defaultContrast;
-        // tokenIdToSat[tokenId] = defaultSaturation;
-        // tokenIdToScale[tokenId] = defaultScale;
-        // tokenIdToStyleId[tokenId] = defaultStyleId;
-        // isAnimatedMap[tokenId] = true;
+        setTokenData(
+            tokenId,
+            Attributes({
+                hue: hue,
+                duration: _duration, 
+                intensity: _intensity,
+                progress: _progress,
+                depth: _depth,
+                scale: _scale
+            }), 
+            StyleAttributes(
+                defaultContrast, 
+                defaultSaturation, 
+                _styleId, 
+                true
+            ));
         _safeMint(msg.sender, 1);
         emit TokenUpdate(msg.sender, tokenId);
     }
@@ -161,7 +133,6 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         // tokenAttributes[tokenId].progress,
         // tokenAttributes[tokenId].depth,
         // tokenAttributes[tokenId].scale,
-        // tokenIdToStyleId[tokenId]    
         // );
     }
 
@@ -196,11 +167,15 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
         return string.concat('data:application/json;base64,', 
             Base64.encode(
                 abi.encodePacked(
-                    '{"description": "Limited edition dynamic on-chain image. The expression of this work is controlled by the owner settings of Theme, Intensity, Duration, Progress, and Depth. ", "name": "Origins Hue ', 
+                    '{"description": "A purely on-chain PRMNT members token. Theme, style, size, and animation are set by its owner. Control this artwork at prmnt.art.", "name": "Origins Hue ', 
                     Strings.toString(tokenAttributes[tokenId].hue), 
-                    '/360", ', 
+                    ' / 360", ', 
                     '"external_url": "', baseUri, Strings.toString(tokenId), '" , ', 
                     getAttributesString(tokenId),
+                    // ', "animation_url": "data:image/svg+xml;base64,', 
+                    //     Base64.encode(
+                    //         bytes(getImage(tokenId))
+                        // ),
                     ', "image": "data:image/svg+xml;base64,', 
                         Base64.encode(
                             bytes(getImage(tokenId))
@@ -212,26 +187,42 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
     }
 
     /* 
+    GET ATTRIBUTES STRING
     Returns attribtues string for ease of use
     */
     function getAttributesString(uint tokenId) internal view returns (string memory){
-        return string.concat('"attributes": [{"trait_type": "Hue", "value": "', 
-                        Strings.toString(tokenAttributes[tokenId].hue),
-                        '"}, {"trait_type": "Duration", "value": "', 
-                        Strings.toString(tokenAttributes[tokenId].duration),
-                        '"}, {"trait_type": "Intensity", "value": "', 
-                        Strings.toString(tokenAttributes[tokenId].intensity),
-                        '"}, {"trait_type": "Progress", "value": "', 
-                        Strings.toString(tokenAttributes[tokenId].progress),
-                        '"}, {"trait_type": "Depth", "value": "', 
-                        Strings.toString(tokenAttributes[tokenId].depth),
-                        '"}, {"trait_type": "Scale", "value": "', 
-                        Strings.toString(tokenAttributes[tokenId].scale),
-                        // '"}, {"trait_type": "Animated", "value": "', 
-                        // isAnimatedMap[tokenId] ? 'Yes' : 'No',
-                        // '"}, {"trait_type": "Items", "value": "', 
-                        // Strings.toString(itemsMap[tokenId].length),
-                        '"}]');
+        return string.concat('"attributes": [',
+                        // '{"trait_type": "Hue", "value": "', 
+                        // Strings.toString(tokenAttributes[tokenId].hue),
+                        // '"}, {"trait_type": "Duration", "value": "', 
+                        // Strings.toString(tokenAttributes[tokenId].duration),
+                        // '"}, {"trait_type": "Intensity", "value": "', 
+                        // Strings.toString(tokenAttributes[tokenId].intensity),
+                        // '"}, {"trait_type": "Progress", "value": "', 
+                        // Strings.toString(tokenAttributes[tokenId].progress),
+                        // '"}, {"trait_type": "Depth", "value": "', 
+                        // Strings.toString(tokenAttributes[tokenId].depth),
+                        // '"}, {"trait_type": "Scale", "value": "', 
+                        // Strings.toString(tokenAttributes[tokenId].scale),
+                        getAttributeString("Hue", Strings.toString(tokenAttributes[tokenId].hue)),
+                        ', ',
+                        getAttributeString("Duration", Strings.toString(tokenAttributes[tokenId].duration)),
+                        ', ',
+                        getAttributeString("Intensity", Strings.toString(tokenAttributes[tokenId].intensity)),
+                        ', ',
+                        getAttributeString("Progress", Strings.toString(tokenAttributes[tokenId].progress)),
+                        ', ',
+                        getAttributeString("Depth", Strings.toString(tokenAttributes[tokenId].depth)),
+                        ', ',
+                        getAttributeString("Scale", Strings.toString(tokenAttributes[tokenId].scale)),
+                        ', ',
+                        getAttributeString("Style", Strings.toString(tokenStyles[tokenId].styleId)),
+                        ']');
+    }
+    
+    function getAttributeString(string memory _name, string memory _value) internal view returns (string memory){
+        //_isStyleAttibute  ? tokenStyles[tokenId][_attribute] : 
+        return string.concat('{"trait_type": "', _name ,'", "value": "', _value, '"}');
     }
    
 
@@ -266,15 +257,15 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
     /**
      * @dev Returns bool true if the image is animated
      */
-    function setIsAnimated(uint256 tokenId, bool newState) external onlyOwner returns (bool ){   
-        return isAnimatedMap[tokenId] = newState;
+    function setIsAnimated(uint256 tokenId, bool newState) external onlyOwner{   
+        tokenStyles[tokenId].isAnimated = newState;
     }
 
     /**
      * @dev Returns bool true if the image is animated
      */
     function getIsAnimated(uint256 tokenId) public view returns (bool ){   
-        return isAnimatedMap[tokenId];
+        return tokenStyles[tokenId].isAnimated;
     }
 
     
@@ -324,8 +315,8 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
     
     function getTheme(uint256 tokenId) public view returns (Theme memory theme ){   
         uint themeHue = tokenAttributes[tokenId].hue;
-        uint sat = tokenIdToSat[tokenId];
-        uint contrast = tokenIdToContrast[tokenId];
+        uint sat = tokenStyles[tokenId].saturation;
+        uint contrast = tokenStyles[tokenId].contrast;
         theme.colors = getThemeColors(tokenId);
         theme.name = "Origins Theme";
         theme.hue = themeHue;
@@ -463,21 +454,21 @@ contract PrmntOrigins is ERC721Base, EngineOrigins {
      *  Return style data
      */
     function getItemStyle(uint styleId) public view returns (string memory style){
-        return IStyles(stylesContractAddress).getStyle(styleId);
+        return IStyles(stylesContract).getStyle(styleId);
     }
 
     /**
      *  Update Styles Contract Address
      */
     function getStyleContract() public view onlyOwner returns ( address ) {
-        return stylesContractAddress;
+        return stylesContract;
     }
     
     /**
      *  Update Styles Contract Address
      */
     function setStyleContract(address newAddress) public onlyOwner {
-        stylesContractAddress = newAddress;
+        stylesContract = newAddress;
     }
     /**
      *  Update Base Uri

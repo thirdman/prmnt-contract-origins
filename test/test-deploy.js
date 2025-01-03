@@ -7,6 +7,7 @@ const doThemes = false;
 const doOrigins = true;
 const doClaim = true;
 const doStyle = false;  
+const doAttributes = false;  
 const doGallery = false;  
 const allMode = false;
 
@@ -78,8 +79,8 @@ describe("PrmntOrigins", function () {
       console.log('unusedHue2', unusedHue2);
     });
   }
-  if(doOrigins && 1===2){
-  it("Should set an artwork", async function () {
+  if(doOrigins){
+  it("doOrigins: Should set an artwork", async function () {
     const expectedId = 0
     const expectedHue = getRandomInt(0, 359)
     const styleContract = await PrmntOrigins.getStyleContract();
@@ -94,13 +95,16 @@ describe("PrmntOrigins", function () {
         progress: getRandomInt(20, 100),
         depth: getRandomInt(1, 100),
         scale: getRandomInt(30, 200),
+        styleId: getRandomInt(0, 4),
       }
-      const transactionResponseClaim = await PrmntOrigins.claim(
+      const transactionResponseClaim = await PrmntOrigins.claimCustom(
         expectedHue,
         attributes.duration, 
         attributes.intensity, 
         attributes.progress,
         attributes.depth,
+        attributes.scale,
+        attributes.styleId,
         // [], // default works
       );
       await transactionResponseClaim.wait(1);
@@ -115,10 +119,10 @@ describe("PrmntOrigins", function () {
     );
     transactionResponse.wait(1)
     // console.log('set attributes transactionResponse', transactionResponse);
-    const currentValue = await PrmntOrigins.getAttributes(expectedId); 
-    console.log('currentValue', currentValue)
-    const currentURI = await PrmntOrigins.tokenURI(expectedId);
-    console.log('currentURI', currentURI)
+    // const currentValue = await PrmntOrigins.getAttributes(expectedId); 
+    // console.log('currentValue', currentValue)
+    // const currentURI = await PrmntOrigins.tokenURI(expectedId);
+    // console.log('currentURI', currentURI)
     const currentImage = await PrmntOrigins.getImage(expectedId);
     console.log('currentImage')
     console.log(currentImage)
@@ -154,15 +158,21 @@ describe("PrmntOrigins", function () {
     await PrmntOrigins.claimRandom(); 
     await PrmntOrigins.claimRandom(); 
     await PrmntOrigins.claimRandom(); 
-      const claimedHueValue1 = await PrmntOrigins.tokenHueToId(expectedHue);
-      console.log('claimedHueValue1', claimedHueValue1);
-      const claimedHueValue2 = await PrmntOrigins.tokenHueToId(expectedHue + 2);
-      console.log('claimedHueValue1', claimedHueValue2);
-      const claimedHueValue3 = await PrmntOrigins.tokenHueToId(expectedHue + 1);
-      console.log('claimedHueValue1', claimedHueValue3);
+      // const claimedHueValue1 = await PrmntOrigins.tokenHueToId(expectedHue);
+      // console.log('claimedHueValue1', claimedHueValue1);
+      // const claimedHueValue2 = await PrmntOrigins.tokenHueToId(expectedHue + 2);
+      // console.log('claimedHueValue1', claimedHueValue2);
+      // const claimedHueValue3 = await PrmntOrigins.tokenHueToId(expectedHue + 1);
+      // console.log('claimedHueValue1', claimedHueValue3);
       // const unclaimedHueValue = await PrmntOrigins.tokenHueToId(362);
       // console.log('unclaimedHueValue', unclaimedHueValue);
-
+      for (let index = 2; index < 20; index++) {
+        // const element = array[index];
+        const currentImage = await PrmntOrigins.getImage(index);
+        console.log(`currentImage [${index}]`)
+        console.log(currentImage)
+      }
+      if(doAttributes){
       const currentAttributes8 = await PrmntOrigins.getAttributes(8);
       console.log(`currentAttributes8 (#${9})`, currentAttributes8)
       const currentImage8 = await PrmntOrigins.getImage(8);
@@ -181,11 +191,12 @@ describe("PrmntOrigins", function () {
       console.log('currentImage27')
       console.log(currentImage27)
 
-    // const themeString = await PrmntOrigins.getThemeString(['#000', '#444', '#777', '#aaa', '#eee' ]);
-    // console.log('themeString', themeString)
+    const themeString = await PrmntOrigins.getThemeString(['#000', '#444', '#777', '#aaa', '#eee' ]);
+    console.log('themeString', themeString)
     const colorVariables = await PrmntOrigins.getColorVariables(['#000', '#444', '#777', '#aaa', '#eee' ]);
     console.log('colorVariables', colorVariables)
-    expect(currentValue).to.be.a('array');
+    }
+    expect(currentImage).to.be.a('string');
     // assert.equal(currentValue.toString(), expectedValue)
   })
   }
@@ -265,10 +276,35 @@ describe("PrmntOrigins", function () {
       const expectedId = 0;
       const transactionResponseClaim2 = await PrmntOrigins.claimRandom();
       await transactionResponseClaim2.wait(1);
-      console.log('transactionResponseClaim2', transactionResponseClaim2)
+      // console.log('transactionResponseClaim2', transactionResponseClaim2)
       const currentURI = await PrmntOrigins.tokenURI(expectedId);
       console.log('currentURI')
       console.log(currentURI)
+      
+      const expectedHue = 123;
+      const attributes = {
+        duration: getRandomInt(10, 40),
+        intensity: getRandomInt(1, 100),
+        progress: getRandomInt(20, 100),
+        depth: getRandomInt(10, 80),
+        scale: getRandomInt(10, 200),
+        scale: getRandomInt(30, 200),
+        styleId: getRandomInt(0, 4),
+      }
+      const transactionResponse = await PrmntOrigins.claimCustom(
+        expectedHue,
+        attributes.duration, 
+        attributes.intensity, 
+        attributes.progress,
+        attributes.depth,
+        attributes.scale,
+        attributes.styleId,
+      );
+      await transactionResponse.wait(1);
+      // const currentURI2 = await PrmntOrigins.tokenURI(expectedId + 1);
+      const currentImage2 = await PrmntOrigins.getImage(expectedId + 1);
+      console.log('currentImage2')
+      console.log(currentImage2)
     })
   }
   if (doOrigins && !allMode && 1===2) {
@@ -285,14 +321,17 @@ describe("PrmntOrigins", function () {
         progress: getRandomInt(20, 100),
         depth: getRandomInt(10, 80),
         scale: getRandomInt(10, 200),
-        // depth: 50,
+        scale: getRandomInt(30, 200),
+        styleId: getRandomInt(0, 4),
       }
-      const transactionResponse = await PrmntOrigins.claim(
+      const transactionResponse = await PrmntOrigins.claimCustom(
         expectedHue,
         attributes.duration, 
         attributes.intensity, 
         attributes.progress,
         attributes.depth,
+        attributes.scale,
+        attributes.styleId,
         // [] // ddefault works
         // expectedCount
       );
